@@ -1,6 +1,7 @@
 {
   "name": "kbb-screenshot-service",
   "version": "1.0.0",
+  "type": "commonjs",
   "description": "HTML to JPEG screenshot service for KBB carousels",
   "main": "server.js",
   "scripts": { "start": "node server.js" },
