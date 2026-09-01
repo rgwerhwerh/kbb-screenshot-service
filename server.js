@@ -26,14 +26,13 @@ async function getBrowser() {
 function uploadToWP(buf, wpBase, wpAuth, filename) {
   return new Promise((resolve, reject) => {
     const boundary = '----WPUpload' + Date.now();
-    const CRLF = '
-';
+    const NL = '\r\n';
     const header = Buffer.from(
-      '--' + boundary + CRLF +
-      'Content-Disposition: form-data; name="file"; filename="' + filename + '"' + CRLF +
-      'Content-Type: image/jpeg' + CRLF + CRLF
+      '--' + boundary + NL +
+      'Content-Disposition: form-data; name="file"; filename="' + filename + '"' + NL +
+      'Content-Type: image/jpeg' + NL + NL
     );
-    const footer = Buffer.from(CRLF + '--' + boundary + '--' + CRLF);
+    const footer = Buffer.from(NL + '--' + boundary + '--' + NL);
     const body = Buffer.concat([header, buf, footer]);
     const parsed = new URL(wpBase + '/wp-json/wp/v2/media');
     const lib = parsed.protocol === 'https:' ? https : http;
@@ -77,12 +76,10 @@ app.post('/screenshot', async (req, res) => {
     if (delay > 0) await new Promise(r => setTimeout(r, delay));
     const buf = await page.screenshot({ type: 'jpeg', quality: 90, fullPage: false });
     await page.close();
-    // If WP credentials provided, upload directly and return URL
     if (wpBase && wpAuth && filename) {
       const url = await uploadToWP(buf, wpBase, wpAuth, filename);
       return res.json({ source_url: url, size: buf.length });
     }
-    // Return base64 JSON (safe for n8n)
     if (format === 'base64') {
       return res.json({ image: buf.toString('base64'), size: buf.length });
     }
