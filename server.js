@@ -23,7 +23,7 @@ async function getBrowser() {
 app.get('/health', (req, res) => res.json({ ok: true }));
 
 app.post('/screenshot', async (req, res) => {
-  const { html, width = 1080, height = 1350, delay = 1500 } = req.body;
+  const { html, width = 1080, height = 1350, delay = 1500, format } = req.body;
   if (!html) return res.status(400).json({ error: 'html required' });
   let page;
   try {
@@ -34,6 +34,9 @@ app.post('/screenshot', async (req, res) => {
     if (delay > 0) await new Promise(r => setTimeout(r, delay));
     const buf = await page.screenshot({ type: 'jpeg', quality: 90, fullPage: false });
     await page.close();
+    if (format === 'base64') {
+      return res.json({ image: buf.toString('base64'), size: buf.length });
+    }
     res.set('Content-Type', 'image/jpeg');
     res.send(buf);
   } catch (err) {
