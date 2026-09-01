@@ -9,5 +9,5 @@
     "puppeteer-core": "^21.0.0",
     "@sparticuz/chromium": "^119.0.2"
   },
-  "engines": { "node": ">=18" }
+  "engines": { "node": "20" }
 }
