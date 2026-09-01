@@ -1,16 +1,20 @@
 const express = require('express');
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-core');
+const chromium = require('@sparticuz/chromium');
 const app = express();
 app.use(express.json({ limit: '10mb' }));
+
+chromium.setHeadlessMode = true;
+chromium.setGraphicsMode = false;
 
 let browser;
 async function getBrowser() {
   if (!browser || !browser.connected) {
     browser = await puppeteer.launch({
-      headless: 'new',
-      args: ['--no-sandbox','--disable-setuid-sandbox','--disable-dev-shm-usage',
-             '--disable-accelerated-2d-canvas','--no-first-run','--no-zygote',
-             '--single-process','--disable-gpu']
+      args: chromium.args,
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath(),
+      headless: chromium.headless
     });
   }
   return browser;
